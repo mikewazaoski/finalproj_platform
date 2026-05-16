@@ -21,13 +21,19 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader --no-de
 
 COPY . .
 
-RUN if [ ! -f /app/.env ]; then echo "APP_ENV=${APP_ENV:-prod}\nAPP_DEBUG=${APP_DEBUG:-false}\nAPP_SECRET=${APP_SECRET:-ChangeMe}\n" > /app/.env; fi
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+RUN if [ ! -f /app/.env ]; then echo "APP_ENV=prod\nAPP_DEBUG=false\nAPP_SECRET=${APP_SECRET:-ChangeMe}\n" > /app/.env; fi
 
 RUN composer install --no-interaction --optimize-autoloader --no-ansi --no-dev
 
 RUN php bin/console importmap:install --no-interaction
 
 RUN php bin/console cache:warmup --env=prod --no-debug
+
+
 
 FROM php:8.3-fpm as runtime
 
@@ -57,6 +63,5 @@ HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
 EXPOSE 80
-
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

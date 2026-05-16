@@ -1,5 +1,5 @@
 #!/bin/bash
-set --e
+set -e
 
 echo "Starting PHP-FPM..."
 php-fpm -F &

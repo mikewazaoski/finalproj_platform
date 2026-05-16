@@ -6,10 +6,10 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
-    nodejs \
-    npm \
     && docker-php-ext-install pdo pdo_mysql \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -26,8 +26,6 @@ ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
 RUN if [ ! -f /app/.env ]; then echo "APP_ENV=prod\nAPP_DEBUG=false\nAPP_SECRET=${APP_SECRET:-ChangeMe}\n" > /app/.env; fi
-
-RUN composer install --no-interaction --optimize-autoloader --no-ansi --no-dev
 
 RUN php bin/console importmap:install --no-interaction
 
